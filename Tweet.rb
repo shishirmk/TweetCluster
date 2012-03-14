@@ -1,7 +1,7 @@
 require 'spellchecker'
 require 'stemmer'
 require 'time'
-load 'stop_wordlist.rb'
+require 'StopWords'
 
 class Tweet
   attr_accessor :username, :original_tweet, :processed_tweet, :time, :language, :word_array, :chosen
@@ -50,6 +50,10 @@ class Tweet
     @reply
   end
 
+  def to_s
+    return "#{@username}: #{@original_tweet}\nProcessed Tweet: #{@processed_tweet} "
+  end
+
   def self.url_count(tweet)
     return tweet.scan(/(http|https):\/\//).length
   end
@@ -78,11 +82,12 @@ class Tweet
 
   def self.process(tweet)
     temp = Array.new
-    stop_words = get_stopwords()
+    stop_words = StopWords.new
+    stop_words_hash = stop_words.get_hash()
     words = tweet.split()
     words.each do |word|
       processed_word = word.gsub(/[[:punct:]]/,'').strip().downcase()
-      temp << processed_word.stem() if stop_words[processed_word].nil?
+      temp << processed_word.stem() if stop_words_hash[processed_word].nil?
     end
     return temp.join(' ')
   end
