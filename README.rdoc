@@ -1,0 +1,19 @@
+= \TweetCluster - Twitter Clustering
+
+== Introduction
+
+This is a ruby based project to try out various ideas for summarizing tweets in general. The scenario couls be a whole set up tweets describing a game Or it could be a single persons lastest tweets. We are considering only twitter for now. The idea is to try out and prove the algorithms or combination of algorithms for twitter. However really it should work for any set of short messages. 
+
+== Description
+
+We have presently Divided the Project into the following parts
+
+* Tweet.rb It contains a class which is a mechanism to store tweets we obtain from various sources as a single type of object.
+* Word.rb Is a class we use it to store the attributes of a word which are important in making decisions about the tweets, for example IDF of the word, Its proximity values etc.
+* StopWords class we also have a list of stop words in the class. This list can be modified too using this class. This is used to filter out commonly used English words
+* Main.rb This contains the main function which co-ordinates the various series of operations.
+
+== License
+
+This software is property of Shishir Kakaraddi. As this is part of my research work.
+
