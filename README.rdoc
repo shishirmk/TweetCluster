@@ -1,5 +1,7 @@
 = \TweetCluster - Twitter Clustering
 
+A modular implementation of my research ideas for tweet summarization
+
 == Introduction
 
 This is a ruby based project to try out various ideas for summarizing tweets in general. The scenario couls be a whole set up tweets describing a game Or it could be a single persons lastest tweets. We are considering only twitter for now. The idea is to try out and prove the algorithms or combination of algorithms for twitter. However really it should work for any set of short messages. 
