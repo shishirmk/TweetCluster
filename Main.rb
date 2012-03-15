@@ -10,6 +10,7 @@ require 'PrintData'
 require 'DataPoint'
 require 'TwitterWrapper'
 require 'Sentiment'
+require 'WekaWrapper'
 
 #Extending class array with a sum function.
 class Array
@@ -60,7 +61,7 @@ def main_function()
 	end
 
 	#Print tweets to a csv
-  PrintData.print_csv(data_points,"Results/#{ARGV[0]}_data.csv")
+	WekaWrapper.datapoints_to_clusters(data_points)
 end
 
 main_function()
