@@ -4,7 +4,8 @@ require 'time'
 require 'StopWords'
 
 class Tweet
-  attr_accessor :username, :original_tweet, :processed_tweet, :time, :language, :word_array, :chosen
+  attr_accessor :username, :processed_tweet, :language, :word_array, :chosen
+  attr_reader :time, :original_tweet
   def initialize(username = "",tweet = "" ,time = "",language = "en")
     @username = username
     @original_tweet = tweet

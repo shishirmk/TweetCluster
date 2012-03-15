@@ -15,13 +15,14 @@ class TwitterWrapper
 		@result_type = result_type
 	end
 
-	def initialize()
-	end
-
 	def search_tweets(query)
 		query = URI.escape(query, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))	
 		uri = URI("#{@search_uri}?q=#{query}&rpp=#{@rpp}&result_type=#{@result_type}")
-		response = Net::HTTP.get(uri)
+		begin
+			response = Net::HTTP.get(uri)
+		rescue
+			puts "Twitter is sending data"
+		end
 		resposne_hash =  JSON.parse(response)
 		results_array = resposne_hash["results"]
 		return results_array
@@ -43,7 +44,11 @@ class TwitterWrapper
 	def user_tweets(username,count=50,include_rts=false,exclude_replies=true)
 		user_uri = "http://api.twitter.com/1/statuses/user_timeline.json"
 		uri = URI("#{user_uri}?screen_name=#{username}&count=#{count}&include_rts=#{include_rts}&exclude_replies=#{exclude_replies}")
-		response = Net::HTTP.get(uri)
+		begin
+			response = Net::HTTP.get(uri)
+		rescue
+			puts "Twitter is not sending data"
+		end
 		results_array  =  JSON.parse(response)
 		return results_array
 	end

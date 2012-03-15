@@ -4,10 +4,6 @@ require 'Word'
 class DataPoint
 	attr_accessor :position, :username, :original_tweet, :processed_tweet, :total_words, :least_idf_word1, :least_idf_word2, :least_idf_word3 
 
-	def initialize()
-
-	end
-
 	#Get top 3 least idf words from a word_array
 	def top3(words)
 		temp = words.sort{|a,b| a.idf <=> b.idf}
@@ -15,6 +11,7 @@ class DataPoint
 	end
 
 	def initialize(i,tweet)
+		return if tweet.nil?
 		words = self.top3(tweet.word_array)
 		@position = i
 		@username = tweet.username

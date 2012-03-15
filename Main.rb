@@ -1,10 +1,9 @@
 # coding: utf-8
 require 'redis'
 require 'json'
+require 'rubygems'
 
 #User Defined
-require 'Tweet'
-require 'Word'
 require 'TFIDFWrapper'
 require 'Proximity'
 require 'PrintData'
@@ -23,7 +22,7 @@ def main_function()
 	
 	#Get user tweets from twitter
 	twitter = TwitterWrapper.new
-	tweets_json = twitter.user_tweets("jack")	
+	tweets_json = twitter.user_tweets(ARGV[0])	
 	tweets = twitter.json_to_tweets(tweets_json)
 
 	#Populating the word array of each tweet
@@ -57,7 +56,7 @@ def main_function()
 	end
 
 	#Print tweets to a csv
-  PrintData.print_csv(data_points,ARGV[0])
+  PrintData.print_csv(data_points,"Results/#{ARGV[0]}_data.csv")
 end
 
 main_function()
