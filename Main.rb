@@ -9,6 +9,7 @@ require 'Proximity'
 require 'PrintData'
 require 'DataPoint'
 require 'TwitterWrapper'
+require 'Sentiment'
 
 #Extending class array with a sum function.
 class Array
@@ -28,17 +29,20 @@ def main_function()
 	#Populating the word array of each tweet
 	tfidf = TFIDFWrapper.new(tweets)
 	proximity = Proximity.new
+	sentiment = Sentiment.new
 	tweet_index = 0
 	max = tweets.length #Highest proximity number possible.
 	for tweet in tweets
     	idf_array = tfidf.idf_sentence(tweet.processed_tweet)
     	proximity_array = proximity.proximity_sentence(tweet.processed_tweet,tweet_index,max)
+    	sentiment_array = sentiment.sentiment_sentence(tweet.processed_tweet)
     	i = 0 #Number of words
     	tweet.processed_tweet.split().each do |w|
     		temp = Word.new
     		temp.word = w 
     		temp.idf = idf_array[i]
     		temp.proximity = proximity_array[i]
+    		temp.sentiment = sentiment_array[i]
     		tweet.word_array << temp
     		i += 1
     	end

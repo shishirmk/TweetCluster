@@ -13,6 +13,11 @@ class PrintData
 				temp << dp.processed_tweet
 				temp << dp.total_words
 				temp << dp.least_idf_word1
+				temp << dp.least_idf_word2
+				temp << dp.least_idf_word3
+				temp << dp.sentiment1
+				temp << dp.sentiment2
+				temp << dp.sentiment3
 				csv << temp 
 			end
 		end

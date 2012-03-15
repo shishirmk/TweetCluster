@@ -2,7 +2,7 @@ require 'Tweet'
 require 'Word'
 
 class DataPoint
-	attr_accessor :position, :username, :original_tweet, :processed_tweet, :total_words, :least_idf_word1, :least_idf_word2, :least_idf_word3 
+	attr_accessor :position, :username, :original_tweet, :processed_tweet, :total_words, :least_idf_word1, :least_idf_word2, :least_idf_word3 , :sentiment1, :sentiment2, :sentiment3
 
 	#Get top 3 least idf words from a word_array
 	def top3(words)
@@ -22,6 +22,9 @@ class DataPoint
 		@least_idf_word1 = words[0].word
 		@least_idf_word2 = words[1].word
 		@least_idf_word3 = words[2].word
+		@sentiment1 = words[0].sentiment
+		@sentiment2	= words[1].sentiment
+		@sentiment3 = words[2].sentiment
 	end
 
 end
