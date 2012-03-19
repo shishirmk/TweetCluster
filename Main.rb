@@ -10,6 +10,11 @@ require 'PrintData'
 require 'DataPoint'
 require 'TwitterWrapper'
 require 'Sentiment'
+require 'Cluster'
+require 'Point'
+
+
+INFINITY = 1.0/0
 
 #Extending class array with a sum function.
 class Array
@@ -17,6 +22,7 @@ class Array
         self.inject{|sum,x| sum + x }
     end
 end
+
 
 #The main function 
 def main_function()
@@ -37,7 +43,7 @@ def main_function()
     	proximity_array = proximity.proximity_sentence(tweet.processed_tweet,tweet_index,max)
     	sentiment_array = sentiment.sentiment_sentence(tweet.processed_tweet)
     	i = 0 #Number of words
-    	tweet.processed_tweet.split().each do |w|
+    	tweet.processed_tweet.split().uniq.each do |w|
     		temp = Word.new
     		temp.word = w 
     		temp.idf = idf_array[i]
@@ -55,7 +61,8 @@ def main_function()
 	data_points = Array.new
 	i = 0
 	tweets.each do |tweet|
-		data_points << DataPoint.new(i,tweet)
+		t = DataPoint.new(i,tweet) 
+		data_points << t if !t.empty? and !t.nil?
 		i += 1
 	end
 

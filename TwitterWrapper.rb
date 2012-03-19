@@ -6,11 +6,13 @@ require 'Tweet'
 
 class TwitterWrapper
 
-	attr_accessor :search_uri, :result_type, :rpp 
+	SEARCH_URI = "http://search.twitter.com:80/search.json"
+	USER_URI = "http://api.twitter.com/1/statuses/user_timeline.json"
+	attr_accessor :result_type, :rpp 
 
-	def initialize(search_uri = "http://search.twitter.com:80/search.json", result_type = "recent", rpp = 10)
+	def initialize( result_type = "recent", rpp = 10)
 		#Refer https://dev.twitter.com/docs/api/1/get/search
-		@search_uri = search_uri
+		@search_uri = SEARCH_URI
 		@rpp = rpp
 		@result_type = result_type
 	end
@@ -42,7 +44,7 @@ class TwitterWrapper
 	end
 
 	def user_tweets(username,count=50,include_rts=false,exclude_replies=true)
-		user_uri = "http://api.twitter.com/1/statuses/user_timeline.json"
+		user_uri = USER_URI
 		uri = URI("#{user_uri}?screen_name=#{username}&count=#{count}&include_rts=#{include_rts}&exclude_replies=#{exclude_replies}")
 		begin
 			response = Net::HTTP.get(uri)
