@@ -12,7 +12,7 @@ require 'TwitterWrapper'
 require 'Sentiment'
 require 'Cluster'
 require 'Point'
-
+require 'Clusterer'
 
 INFINITY = 1.0/0
 
@@ -23,7 +23,6 @@ class Array
     end
 end
 
-
 #The main function 
 def main_function()
 	
@@ -31,6 +30,8 @@ def main_function()
 	twitter = TwitterWrapper.new
 	tweets_json = twitter.user_tweets(ARGV[0])	
 	tweets = twitter.json_to_tweets(tweets_json)
+  #Filter retweets and reply. Just remove them from the list of tweets
+  tweets = tweets.delete_if {|tweet| tweet.is_reply? or tweet.is_retweet?}
 
 	#Populating the word array of each tweet
 	tfidf = TFIDFWrapper.new(tweets)
@@ -57,17 +58,26 @@ def main_function()
   	tweet_index += 1 #To maintain the tweet number for proximity.
 	end
 
-	#Make datapoints out of tweets
-	data_points = Array.new
+  #Filter all tweets if they have word_array as nil
+	all_points = Array.new
 	i = 0
 	tweets.each do |tweet|
-		t = DataPoint.new(i,tweet) 
-		data_points << t if !t.empty? and !t.nil?
-		i += 1
+		if tweet.word_array.length >= 3
+			t = Point.new(tweet) 
+			all_points << t 
+			i += 1
+		end
 	end
 
-	#Print tweets to a csv
-  PrintData.print_csv(data_points,"Results/#{ARGV[0]}_data.csv")
+	clusters = Clusterer.kmeans(all_points,5,2)
+	clusters.each do |cluster|
+		puts cluster.to_s
+		puts "\n"
+	end
+
+ 	#Print tweets to a csv
+ 	#PrintData.print_csv(data_points,"Results/#{ARGV[0]}_data.csv")
+
 end
 
 main_function()

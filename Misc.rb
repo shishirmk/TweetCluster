@@ -42,35 +42,61 @@ def get_tweets_from_redis
 	end
 end
 
-	#Printing the csv file for analysis
-	def print_csv(tweets,filename)
-		CSV.open(filename, "wb",{:force_quotes => true}) do |csv|
-			csv  << ["Username","Tweet","#Words","word1","word2","word3","idf1","idf2","idf3","prx1","prx2","prx3","Url Count","Hashtag Count","Chosen"]
-			tweets.each do |tweet|
-				words = self.top3(tweet.word_array)
-				next if words.nil?
-				temp = Array.new
-				temp << tweet.username
-				clean_tweet = tweet.original_tweet.gsub(/[[:punct:]]/,'').gsub(/\s+/,' ')
-				temp << clean_tweet
-				temp << clean_tweet.split().length #Number of words Includes all words like stop words etc
-				temp << words[0].word
-				temp << words[1].word
-				temp << words[2].word
-				temp << words[0].idf.round(4)
-				temp << words[1].idf.round(4)
-				temp << words[2].idf.round(4) 
-				temp << words[0].proximity
-				temp << words[1].proximity
-				temp << words[2].proximity
-				temp << Tweet.url_count(tweet.original_tweet)
-				temp << Tweet.hashtag_count(tweet.original_tweet)
-				if tweet.chosen.nil?
-					temp << 0
-				else
-					temp << 1
-				end
-				csv << temp if !words.nil?
-			end
-	  	end
-	end
+def kmeans(data, k, delta=1)
+  clusters = []
+
+  # Assign intial values for all clusters
+  (1..k).each do |point|
+
+    c = Cluster.new(data.sample)
+
+    clusters.push c
+  end
+
+
+  # Loop
+  while true
+    # Assign points to clusters
+    data.each do |point|
+      min_dist = +INFINITY
+      min_cluster = clusters.sample
+
+      # Find the closest cluster
+      clusters.each do |cluster|
+        dist = point.dist_to(cluster.center)
+
+        if dist < min_dist
+          min_dist = dist
+          min_cluster = cluster
+        end
+      end
+
+      # Add to closest cluster
+      min_cluster.points.push point
+    end
+
+    # Check deltas
+    max_delta = -INFINITY
+
+    clusters.each do |cluster|
+      dist_moved = cluster.recenter!
+
+      # Get largest delta
+      if dist_moved > max_delta
+        max_delta = dist_moved
+      end
+    end
+
+    # Check exit condition
+    if max_delta < delta
+      return clusters
+    end
+
+    # Reset points for the next iteration
+    clusters.each do |cluster|
+      cluster.points = []
+    end
+
+  end  # end of while
+  return clusters
+end  # end of kmeans()

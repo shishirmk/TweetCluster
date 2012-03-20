@@ -45,7 +45,7 @@ class TwitterWrapper
 
 	def user_tweets(username,count=50,include_rts=false,exclude_replies=true)
 		user_uri = USER_URI
-		uri = URI("#{user_uri}?screen_name=#{username}&count=#{count}&include_rts=#{include_rts}&exclude_replies=#{exclude_replies}")
+		uri = URI("#{user_uri}?screen_name=#{username}&count=#{count}&include_rts=#{include_rts}&exclude_replies=#{exclude_replies}\n")
 		begin
 			response = Net::HTTP.get(uri)
 		rescue
@@ -63,8 +63,8 @@ class TwitterWrapper
     	temp.language = t['user']['lang']
     	temp.original_tweet = t['text']
     	temp.time = t['created_at']
-    	temp.retweet = true if t['retweet_count'] != 0
-    	temp.reply = true if t['in_reply_to_status_id'] != "null"
+    	#temp.retweet = true if Tweet.check_retweet(temp.original_tweet)
+    	#temp.reply = true if Tweet.check_reply(temp.original_tweet)
     	#temp.chosen = true if chosen_list[0].index(temp.original_tweet) #Needs to done later
     	tweets << temp
 	  end

@@ -52,7 +52,7 @@ class Tweet
   end
 
   def to_s
-    return "#{@username}: #{@original_tweet}\nProcessed Tweet: #{@processed_tweet} "
+    return "#{@username}: #{@original_tweet}\nRetweet =#{@retweet} , Reply =#{@reply} "
   end
 
   def self.url_count(tweet)
