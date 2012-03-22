@@ -11,7 +11,6 @@ class Cluster
   def recenter!(k=3)
     old_center = @center
     # Reset center and return distance moved
-    puts @points.length
     @center = Point.avg(@points)
     return old_center.dist_to(center)    
   end
@@ -23,6 +22,10 @@ class Cluster
       temp += "\n"
     end
     return temp
+  end
+
+  def size
+    return @points.size
   end
 
 end

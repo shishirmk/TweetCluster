@@ -16,15 +16,15 @@ class Point
   # Calculates the distance to Point p
   def dist_to(operand,k=3)
     matches = 0
-    (0..k).each do |i|
-      (0..k).each do |j|
+    (0..k-1).each do |i|
+      (0..k-1).each do |j|
         if !@word_array[i].nil? or !operand.word_array[j].nil?
           matches += 1 if @word_array[i] == operand.word_array[j]
         end
       end
     end
 
-    dist = ((2*k) - matches)
+    dist = k - matches
     #puts dist if dist < 6 
     return dist 
   end
