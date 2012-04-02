@@ -11,8 +11,9 @@ class Cluster
   def recenter!(k=3)
     old_center = @center
     # Reset center and return distance moved
-    @center = Point.avg(@points)
-    return old_center.dist_to(center)    
+    @center = Point.avg(@points,k)
+    # puts "#{old_center.word_array}\n#{@center.word_array}"
+    return old_center.dist_to(center,k)    
   end
 
   def to_s
@@ -26,6 +27,23 @@ class Cluster
 
   def size
     return @points.size
+  end
+
+  def sd(k)
+    return nil if @points.length == 0
+    len = @points.length
+    scores_array = Array.new
+    i = 0; j = 0
+    while i < len
+      j = i + 1
+      while j < len
+        scores_array << @points[i].dist_to(@points[j],k)
+        j = j + 1
+      end
+      i = i + 1
+    end
+    puts scores_array.to_s
+    return scores_array.standard_deviation(0)
   end
 
 end

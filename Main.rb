@@ -14,12 +14,30 @@ require 'Cluster'
 require 'Point'
 require 'Clusterer'
 require 'Summary'
+require 'NLP'
 
 #Extending class array with a sum function.
-class Array
+module Enumerable
+
     def sum
-        self.inject{|sum,x| sum + x }
+      self.inject(0){|accum, i| accum + i }
     end
+
+    def mean
+      self.sum/self.length.to_f
+    end
+
+    def sample_variance(mean)
+      return 1/0.0 if self.length <= 1
+      m = mean || self.mean
+      sum = self.inject(0){|accum, i| accum +(i-m)**2 }
+      sum/(self.length - 1).to_f
+    end
+
+    def standard_deviation(mean)
+      return Math.sqrt(self.sample_variance(mean))
+    end
+
 end
 
 #The main function 
@@ -31,7 +49,7 @@ def main_function()
 	tweets = twitter.json_to_tweets(tweets_json)
   #Filter retweets and reply. Just remove them from the list of tweets
   tweets = tweets.delete_if {|tweet| tweet.is_reply? or tweet.is_retweet?}
-  puts "Tweets Returned Just fine"
+  puts "Tweets Returned Just fine" if !tweets.nil?
 
 	#Populating the word array of each tweet
 	tfidf = TFIDFWrapper.new(tweets)
@@ -43,6 +61,7 @@ def main_function()
     	idf_array = tfidf.idf_sentence(tweet.processed_tweet)
     	proximity_array = proximity.proximity_sentence(tweet.processed_tweet,tweet_index,max)
     	sentiment_array = sentiment.sentiment_sentence(tweet.processed_tweet)
+      pos_array = NLP.pos_sentence(tweet)
     	i = 0 #Number of words
     	tweet.processed_tweet.split().uniq.each do |w|
     		temp = Word.new
@@ -50,6 +69,7 @@ def main_function()
     		temp.idf = idf_array[i]
     		temp.proximity = proximity_array[i]
     		temp.sentiment = sentiment_array[i]
+        temp.pos = pos_array[i]
     		tweet.word_array << temp
     		i += 1
     	end
@@ -72,7 +92,7 @@ def main_function()
   input_tweets = all_points.clone
   final_clusters = Array.new
   i = 2
-  params_length = 1
+  params_length = 3
   while !all_points.empty?
     clusters = Clusterer.kmeans(all_points,i,params_length)
     flag = 0
@@ -88,8 +108,10 @@ def main_function()
     if flag == 0
       i += 1
     else
-      params_length += 1
+      #params_length += 1
     end
+    puts "#{Time.now} #{final_clusters.length}"
+    puts "#{Point.get_counter}"
   end
   puts "Clustering done fine"
 
@@ -99,8 +121,11 @@ def main_function()
   #Output part
   output_filename = "Results/#{ARGV[0]}_results.txt"
   Clusterer.print_to(output_filename,input_tweets,final_clusters)
-  Clusterer.append_to(output_filename,"Computer Generated Summary",chosen_summary)
+  Clusterer.append_to(output_filename,"Max #words summary",chosen_summary)
+  Clusterer.append_to(output_filename,"Cluster Center Summary",Summary.center_summary(final_clusters))
+  Clusterer.append_to(output_filename,"Highest Sentiment Summary",Summary.sentiment_summary(final_clusters))
   Clusterer.append_to(output_filename,"Random Generated Summary",random_summary)
+  final_clusters.each {|cluster| puts "#{cluster.center} #{cluster.sd(params_length)}" if cluster.points.length > 1}
  	#Print tweets to a csv
  	#PrintData.print_csv(data_points,"Results/#{ARGV[0]}_data.csv")
 

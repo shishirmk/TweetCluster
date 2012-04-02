@@ -61,7 +61,7 @@ class TwitterWrapper
 			temp = Tweet.new
     	temp.username = t['user']['screen_name']
     	temp.language = t['user']['lang']
-    	temp.original_tweet = t['text']
+    	temp.original_tweet = t['text'].gsub(/\n|\r/,'')
     	temp.time = t['created_at']
     	#temp.chosen = true if chosen_list[0].index(temp.original_tweet) #Needs to done later
     	tweets << temp

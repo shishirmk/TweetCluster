@@ -1,5 +1,5 @@
 class Word
-	attr_accessor :word, :idf, :proximity, :sentiment
+	attr_accessor :word, :idf, :proximity, :sentiment, :pos
 
 	def initialize
 	end

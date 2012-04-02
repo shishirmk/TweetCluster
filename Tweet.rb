@@ -88,6 +88,7 @@ class Tweet
     words = tweet.split()
     words.each do |word|
       processed_word = word.gsub(/[[:punct:]]/,'').strip().downcase()
+      next if word.match(/(http|https):\/\//)
       temp << processed_word.stem() if stop_words_hash[processed_word].nil?
     end
     return temp.join(' ')

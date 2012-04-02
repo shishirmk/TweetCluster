@@ -16,37 +16,43 @@ module Clusterer
   end
 
   def self.outliers(data)
-    outliers = Array.new
+    outliers = Hash.new
     for pt1 in data
       flag = 0
       for pt2 in data
-        for word1 in pt1.word_array
-          for word2 in pt1.word_array
-            if word1 == word2 
-              flag = 1
-              break
+
+          next if pt1 == pt2
+          for word1 in pt1.word_array
+            for word2 in pt2.word_array
+              if word1 == word2 
+                #puts "#{word1.word} #{word2.word}"
+                flag = 1
+                break
+              end
             end
+            break
           end
-        end
+
+          break if flag == 1
       end
       if flag == 0
-        outliers << pt1
+        outliers[pt1] = 1
       end
     end
-    puts outliers.to_s
+    #puts outliers.keys.length
   end
 
 
-  def self.kmeans(data, k, params_length,delta=0, iterations=1000)
+  def self.kmeans(data, k, params_length,delta=1, iterations=1000)
 
     clusters = self.cluster_init(data,k)
-
+    
     i = 0 
     # Loop
     while true
       # Assign points to clusters
       data.each do |point|
-        min_dist = +INFINITY
+        min_dist = point.dist_to(clusters[0].center,params_length)
         min_cluster = clusters[0]
         clusters.each do |cluster|
           dist = point.dist_to(cluster.center,params_length)
@@ -72,6 +78,7 @@ module Clusterer
       end
       # Check exit condition
       if max_delta < delta or i > iterations
+        puts i
         return clusters
       end
 
@@ -97,6 +104,7 @@ module Clusterer
     input_tweets.each do |tweet|
       wfile << "#{tweet} \n"
     end
+    wfile << "\n"
     clusters.each do |cluster|
       wfile << cluster.to_s
       wfile << "\n"
