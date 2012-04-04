@@ -8,7 +8,8 @@ module Clusterer
     between = (data.length/k).round
     # Assign intial values for all cluster
     k.times do |i|
-      c = Cluster.new(data[i*between])
+      c = Cluster.new()
+      c.center = data[i*between]
       clusters.push c
     end
 
@@ -43,7 +44,7 @@ module Clusterer
   end
 
 
-  def self.kmeans(data, k, params_length,delta=1, iterations=1000)
+  def self.kmeans(data, k, params_length,delta=1, iterations=100)
 
     clusters = self.cluster_init(data,k)
     
@@ -119,6 +120,52 @@ module Clusterer
       wfile << "#{tweet} \n"
     end
     wfile.close
+  end
+
+  def self.split_cluster(parent_cluster,final_clusters,branching,params_length)
+    #parent_sd = parent_cluster.sd(params_length).round(2)
+    all_points = parent_cluster.points
+    clusters = self.kmeans(all_points,branching,params_length)
+    clusters.length.times do |i|
+      #child_sd = clusters[i].sd(params_length).round(2)
+      #puts "child #{i}, #{clusters[i].center.word_array[0..2]}, #{child_sd} \nparent, #{parent_cluster.center.word_array[0..2]}, #{parent_sd}\n"
+      if i != 0 or clusters[i].points.length <=2
+        final_clusters << clusters[i]
+      else
+        self.split_cluster(clusters[i],final_clusters,branching,params_length)
+      end
+    end
+    puts "#{Time.now} #{final_clusters.length}"
+    # puts "#{Point.get_counter}"
+  end
+
+  def self.map_to_clusters(all_points)
+    distinct_clusters = Hash.new
+    c = 0
+    for point in all_points
+      distinct_clusters[point.cluster] = c
+      c += 1
+    end
+    clusters_length = distinct_clusters.keys.length
+
+    final_clusters = Array.new
+    clusters_length.times do |i|
+      temp = Cluster.new
+      final_clusters << temp
+    end
+
+    c = 0 
+    distinct_clusters.keys.each do |key|
+      for point in all_points
+        if point.cluster == key 
+          final_clusters[c].points << point
+        end
+      end
+      final_clusters[c].center = final_clusters[c].points.sample
+      c += 1
+    end
+
+    return final_clusters
   end
 
 end

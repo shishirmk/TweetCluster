@@ -2,8 +2,7 @@ class Cluster
   attr_accessor :center, :points
 
   # Constructor with a starting centerpoint
-  def initialize(center)
-    @center = center
+  def initialize()
     @points = []
   end
 
@@ -42,7 +41,6 @@ class Cluster
       end
       i = i + 1
     end
-    puts scores_array.to_s
     return scores_array.standard_deviation(0)
   end
 

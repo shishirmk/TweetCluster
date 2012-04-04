@@ -1,5 +1,5 @@
 class Point
-  attr_accessor :original_tweet, :word_array
+  attr_accessor :original_tweet, :word_array, :cluster
   @@counter = 0
   # Constructor that takes in a hash containing attributes and there properties as key and value respectively.
 

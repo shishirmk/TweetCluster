@@ -4,6 +4,7 @@ require 'json'
 require 'rubygems'
 
 #User Defined
+require 'WekaWrapper'
 require 'TFIDFWrapper'
 require 'Proximity'
 require 'PrintData'
@@ -15,6 +16,7 @@ require 'Point'
 require 'Clusterer'
 require 'Summary'
 require 'NLP'
+require 'rarff'
 
 #Extending class array with a sum function.
 module Enumerable
@@ -88,8 +90,25 @@ def main_function()
 			i += 1
 		end
 	end
-
   input_tweets = all_points.clone
+
+  #Clustering using LDA here.
+  wk = WekaWrapper.new
+  wk.points_to_arff(all_points)
+  wk.run_em
+  wk.get_clusters(all_points)
+  final_clusters = Clusterer.map_to_clusters(all_points)
+
+  #Output part
+  output_filename = "Results/#{ARGV[0]}_em_results.txt"
+  Clusterer.print_to(output_filename,input_tweets,final_clusters)
+  Clusterer.append_to(output_filename,"Max #words summary",Summary.simple_summary(final_clusters))
+  Clusterer.append_to(output_filename,"Cluster Center Summary",Summary.center_summary(final_clusters))
+  Clusterer.append_to(output_filename,"Highest Sentiment Summary",Summary.sentiment_summary(final_clusters))
+  Clusterer.append_to(output_filename,"Random Generated Summary",Summary.random_summary(input_tweets))
+
+
+
   final_clusters = Array.new
   i = 2
   params_length = 3
@@ -108,24 +127,22 @@ def main_function()
     if flag == 0
       i += 1
     else
-      #params_length += 1
+      params_length += 1
     end
     puts "#{Time.now} #{final_clusters.length}"
     puts "#{Point.get_counter}"
   end
   puts "Clustering done fine"
 
-  chosen_summary = Summary.simple_summary(final_clusters)
-  random_summary = Summary.random_summary(input_tweets) #cloned from all_points
-  
-  #Output part
-  output_filename = "Results/#{ARGV[0]}_results.txt"
+  output_filename = "Results/#{ARGV[0]}_kmeans_results.txt"
   Clusterer.print_to(output_filename,input_tweets,final_clusters)
-  Clusterer.append_to(output_filename,"Max #words summary",chosen_summary)
+  Clusterer.append_to(output_filename,"Max #words summary",Summary.simple_summary(final_clusters))
   Clusterer.append_to(output_filename,"Cluster Center Summary",Summary.center_summary(final_clusters))
   Clusterer.append_to(output_filename,"Highest Sentiment Summary",Summary.sentiment_summary(final_clusters))
-  Clusterer.append_to(output_filename,"Random Generated Summary",random_summary)
-  final_clusters.each {|cluster| puts "#{cluster.center} #{cluster.sd(params_length)}" if cluster.points.length > 1}
+  Clusterer.append_to(output_filename,"Random Generated Summary",Summary.random_summary(input_tweets))
+
+  #puts "Cluster Centers"
+  #final_clusters.each {|cluster| puts "#{cluster.center} #{cluster.sd(params_length)}" if cluster.points.length > 1}
  	#Print tweets to a csv
  	#PrintData.print_csv(data_points,"Results/#{ARGV[0]}_data.csv")
 
