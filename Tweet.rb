@@ -55,6 +55,15 @@ class Tweet
     return "#{@username}: #{@original_tweet}\nRetweet =#{@retweet} , Reply =#{@reply} "
   end
 
+	def ==(other)
+		if other.class == "test".class
+			return true if @original_tweet == other
+			return false
+		end
+		return true if @original_tweet == other.original_tweet
+		return false
+	end
+
   def self.url_count(tweet)
     return tweet.scan(/(http|https):\/\//).length
   end

@@ -168,4 +168,20 @@ module Clusterer
     return final_clusters
   end
 
+	def self.cluster_user_correlation(filename,final_clusters,user_tweets)
+		output_file = File.new(filename,"w")
+    final_clusters.delete_if {|cluster| cluster.points.length <=2 }
+		final_clusters.each do |cluster|
+			cluster.points.each do |point|
+				i = 1
+				user_tweets.each do |list|
+					output_file << "USER"+i.to_s+" " if list.index(point.original_tweet) 
+					i += 1
+				end
+				output_file << point.original_tweet+"\n"
+			end
+			output_file << "\n\n"
+		end
+	end
+
 end

@@ -29,7 +29,8 @@ module Summary
 		return chosen_points
 	end
 
-	def self.random_summary(input_points)
+	def self.random_summary(input_tweets)
+    input_points = input_tweets.clone
 		fraction = 0.15
 		chosen_points = Array.new
 		summary_count = ((input_points.length)*0.15).round

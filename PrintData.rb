@@ -4,32 +4,37 @@ require 'csv'
 class PrintData
 
 	#Printing csv to the files.
-	def self.print_csv(datapoints,filename)
+	def self.print_csv(datapoints,filename,user_tweets_list)
 		CSV.open(filename, "wb",{:force_quotes => true}) do |csv|
 				temp = Array.new
-				temp << "username"
 				temp << "original_tweet"
-				temp << "processed_tweet"
 				temp << "total_words"
-				temp << "least_idf_word1"
-				temp << "least_idf_word2"
-				temp << "least_idf_word3"
-				temp << "sentiment1"
-				temp << "sentiment2"
-				temp << "sentiment3"
+        temp << "total_sentiment"
+        temp << "total_nouns"
+        temp << "total_users"
 				csv << temp
 			datapoints.each do |dp|
 				temp = Array.new
-				temp << dp.username
 				temp << dp.original_tweet.gsub(/"*/,"")
-				temp << dp.processed_tweet
-				temp << dp.total_words
-				temp << dp.least_idf_word1
-				temp << dp.least_idf_word2
-				temp << dp.least_idf_word3
-				temp << dp.sentiment1
-				temp << dp.sentiment2
-				temp << dp.sentiment3
+				temp << dp.original_tweet.split(/\s+/).length
+        total_sentiment = dp.word_array.inject(0) {|result,word| result + word.sentiment.abs }
+        temp << total_sentiment
+        total_nouns = dp.word_array.inject(0) do |result,word| 
+          if word.pos.match(/^NN.*/)
+            result + 1
+          else
+            result + 0
+          end
+        end
+        temp << total_nouns
+        total_users = user_tweets_list.inject(0) do |result,tweets|
+          if tweets.index(dp.original_tweet)
+            result + 1
+          else
+            result + 0
+          end
+        end
+        temp << total_users
 				csv << temp 
 			end
 		end
